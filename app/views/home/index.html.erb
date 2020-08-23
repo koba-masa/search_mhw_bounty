@@ -1,0 +1,61 @@
+<p id="notice"><%= notice %></p>
+
+<h3>バウンティ情報</h3>
+<%= form_with url: root_path, method: :post, model: Quest, local: true do |form| %>
+  <table>
+    <thead>
+      <th>No</th>
+      <th>ランク</th>
+      <th colspan="2">条件</th>
+      <th>クリア回数</th>
+    </thead>
+    <tbody>
+      <% quest_map = Quest.new.quest_map %>
+      <% field_map = Field.new.field_map %>
+      <% type_map = Type.new.type_map %>
+      <% monster_map = Monster.new.monster_map %>
+      <% (0..4).each do |n| %>
+        <%= form.fields_for "#{n}" do |f| %>
+          <tr>
+            <th rowspan="4"><%= n + 1 %></th>
+            <td rowspan="4"><%= f.select :rank, QuestRank.new.three_rank_map.map { |k, v| [k, v] }, {selected: 10} %></td>
+            <td>
+              <%= f.radio_button :conditions, :quest %><%= f.label :conditions_quest, "クエスト" %>
+            </td>
+            <td>
+              <%= f.select :quest, quest_map.map { |k, v| [v, k] }, {selected: "イベント"} %>
+            </td>
+            <td rowspan="4">
+              <%= f.select :volume, (1..10).map{|i| [i, i]}, {} %>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <%= f.radio_button :conditions, :field %><%= f.label :conditions_field, "フィールド" %>
+            </td>
+            <td>
+              <%= f.select :field, field_map.map { |k, v| [v, k] }, {} %>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <%= f.radio_button :conditions, :type %><%= f.label :conditions_type, "種別" %>
+            </td>
+            <td>
+              <%= f.select :field, type_map.map { |k, v| [v, k] }, {} %>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <%= f.radio_button :conditions, :monster %><%= f.label :conditions_monster, "モンスター" %>
+            </td>
+            <td>
+              <%= f.select :field, monster_map.map { |k, v| [v, k] }, {} %>
+            </td>
+          </tr>
+        <% end %>
+      <% end %>
+    </tbody>
+  </table>
+  <%= form.submit "検索" %>
+<% end %>
