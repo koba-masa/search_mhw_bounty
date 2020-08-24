@@ -4,15 +4,17 @@
 <%= form_with url: root_path, method: :post, model: Quest, local: true do |form| %>
   <table>
     <thead>
-      <th>No</th>
-      <th>ランク</th>
-      <th colspan="2">条件</th>
-      <th>クリア回数</th>
+      <tr>
+        <th>No</th>
+        <th>ランク</th>
+        <th colspan="2">条件</th>
+        <th>クリア回数</th>
+      </tr>
     </thead>
     <tbody>
       <% quest_map = Quest.new.quest_map %>
       <% field_map = Field.new.field_map %>
-      <% type_map = Type.new.type_map %>
+      <% type_map = MonsterType.new.type_map %>
       <% monster_map = Monster.new.monster_map %>
       <% (0..4).each do |n| %>
         <%= form.fields_for "#{n}" do |f| %>
@@ -42,7 +44,7 @@
               <%= f.radio_button :conditions, :type %><%= f.label :conditions_type, "種別" %>
             </td>
             <td>
-              <%= f.select :field, type_map.map { |k, v| [v, k] }, {} %>
+              <%= f.select :type, type_map.map { |k, v| [v, k] }, {} %>
             </td>
           </tr>
           <tr>
@@ -50,7 +52,7 @@
               <%= f.radio_button :conditions, :monster %><%= f.label :conditions_monster, "モンスター" %>
             </td>
             <td>
-              <%= f.select :field, monster_map.map { |k, v| [v, k] }, {} %>
+              <%= f.select :monster, monster_map.map { |k, v| [v, k] }, {} %>
             </td>
           </tr>
         <% end %>
@@ -59,3 +61,25 @@
   </table>
   <%= form.submit "検索" %>
 <% end %>
+<table>
+  <thead>
+    <tr>
+      <th>クエスト種別</th>
+      <th>クエストランク</th>
+      <th>クエスト名</th>
+      <th>モンスター名</th>
+      <th>モンスター種別</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @quest_monsters.each do | quest_monster | %>
+      <tr>
+        <td><%= quest_monster.quest.quest_type %></td>
+        <td><%= quest_monster.quest.quest_rank.name %></td>
+        <td><%= quest_monster.quest.name %></td>
+        <td><%= quest_monster.monster.name %></td>
+        <td><%= quest_monster.monster.monster_type.type_name %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

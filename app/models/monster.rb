@@ -1,5 +1,5 @@
 class Monster < ApplicationRecord
-  belongs_to :type
+  belongs_to :monster_type
 
   def monster_map
     Monster.all.pluck(:id, :name).to_h

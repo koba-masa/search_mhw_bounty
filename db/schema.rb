@@ -21,12 +21,18 @@ ActiveRecord::Schema.define(version: 2020_08_22_114331) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
-  create_table "monsters", force: :cascade do |t|
-    t.string "name", null: false, comment: "モンスター名"
-    t.bigint "type_id", null: false, comment: "種別"
+  create_table "monster_types", force: :cascade do |t|
+    t.string "type_name", null: false, comment: "種別"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["type_id"], name: "index_monsters_on_type_id"
+  end
+
+  create_table "monsters", force: :cascade do |t|
+    t.string "name", null: false, comment: "モンスター名"
+    t.bigint "monster_type_id", null: false, comment: "種別"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["monster_type_id"], name: "index_monsters_on_monster_type_id"
   end
 
   create_table "quest_monsters", force: :cascade do |t|
@@ -44,7 +50,7 @@ ActiveRecord::Schema.define(version: 2020_08_22_114331) do
   end
 
   create_table "quests", force: :cascade do |t|
-    t.string "type", null: false, comment: "クエスト種別"
+    t.string "quest_type", null: false, comment: "クエスト種別"
     t.bigint "quest_rank_id", null: false, comment: "クエストランク"
     t.string "name", null: false, comment: "クエスト名"
     t.bigint "field_id", null: false, comment: "フィールド"
@@ -55,13 +61,7 @@ ActiveRecord::Schema.define(version: 2020_08_22_114331) do
     t.index ["quest_rank_id"], name: "index_quests_on_quest_rank_id"
   end
 
-  create_table "types", force: :cascade do |t|
-    t.string "type_name", null: false, comment: "種別"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-  end
-
-  add_foreign_key "monsters", "types"
+  add_foreign_key "monsters", "monster_types"
   add_foreign_key "quest_monsters", "monsters"
   add_foreign_key "quest_monsters", "quests"
   add_foreign_key "quests", "fields"
