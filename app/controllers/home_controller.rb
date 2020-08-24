@@ -22,6 +22,7 @@ class HomeController < ApplicationController
         end
       end
     end
+    @quest_monsters = QuestMonster.where(quest_id: @quest_monsters.pluck(:quest_id))
   end
 
   def search(bownty)
