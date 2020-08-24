@@ -1,7 +1,7 @@
 class HomeController < ApplicationController
   # GET /homes
   def index
-    @quest_monsters = []
+    @quest_monsters = nil
     if not params.has_key?(:quest)
       return
     end
@@ -10,14 +10,18 @@ class HomeController < ApplicationController
       if not bownty.has_key?(:conditions)
         next
       end
-      tmp = search(bownty)
+      quests = search(bownty)
       if @quest_monsters.blank?
-        @quest_monsters = tmp
+        @quest_monsters = quests
       else
-        @quest_monsters = @quest_monsters.or(tmp)
+        tmp_quest_monsters = @quest_monsters.clone.merge(quests)
+        if tmp_quest_monsters.present?
+          @quest_monsters = tmp_quest_monsters
+        else
+          @quest_monsters = @quest_monsters.or(quests)
+        end
       end
     end
-    @quest_monsters
   end
 
   def search(bownty)
@@ -48,7 +52,7 @@ class HomeController < ApplicationController
   end
 
   def search_quest_by_monster(rank, condition)
-    return QuestMonster.where(monster_id: condition)
+    return QuestMonster.joins(:quest, :monster).where(monster_id: condition)
   end
 
 end
