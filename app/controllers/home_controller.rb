@@ -7,9 +7,7 @@ class HomeController < ApplicationController
     end
     bownties = params[:quest]
     bownties.each do |key, bownty|
-      if not bownty.has_key?(:conditions)
-        next
-      end
+      next if not bownty.has_key?(:conditions)
       quests = search(bownty)
       if @quest_monsters.blank?
         @quest_monsters = quests
@@ -22,7 +20,7 @@ class HomeController < ApplicationController
         end
       end
     end
-    @quest_monsters = QuestMonster.where(quest_id: @quest_monsters.pluck(:quest_id))
+    @quest_monsters = QuestMonster.where(quest_id: @quest_monsters.pluck(:quest_id)) if @quest_monsters.present?
   end
 
   def search(bownty)
