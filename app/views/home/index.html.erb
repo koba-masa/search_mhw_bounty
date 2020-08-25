@@ -1,0 +1,83 @@
+<p id="notice"><%= notice %></p>
+
+<h3>バウンティ情報</h3>
+<%= form_with url: root_path, method: :post, model: Quest, local: true do |form| %>
+  <% quest_map = Quest.new.quest_map %>
+  <% field_map = Field.new.field_map %>
+  <% type_map = MonsterType.new.type_map %>
+  <% monster_map = Monster.new.monster_map %>
+  <div class="uk-flex">
+    <% (0..4).each do |n| %>
+      <div>
+        <%= form.fields_for "#{n}" do |f| %>
+          <table>
+            <tbody>
+              <tr>
+                <td><%= n + 1 %></td>
+                <td><%= f.radio_button :conditions, :quest %><%= f.label :conditions_quest, "クエスト" %></td>
+                <td><%= f.select :quest, quest_map.map { |k, v| [v, k] }, {selected: "イベント"}, class: "uk-select" %></td>
+                <td rowspan="4"></td>
+              </tr>
+              <tr>
+                <td rowspan="3"><%= f.select :rank, QuestRank.new.three_rank_map.map { |k, v| [k, v] }, {selected: 10}, class: "uk-select" %></td>
+                <td><%= f.radio_button :conditions, :field %><%= f.label :conditions_field, "フィールド" %></td>
+                <td><%= f.select :field, field_map.map { |k, v| [v, k] }, {}, class: "uk-select" %></td>
+              </tr>
+              <tr>
+                <td><%= f.radio_button :conditions, :type %><%= f.label :conditions_type, "種別" %></td>
+                <td><%= f.select :type, type_map.map { |k, v| [v, k] }, {}, class: "uk-select" %></td>
+              </tr>
+              <tr>
+                <td><%= f.radio_button :conditions, :monster %><%= f.label :conditions_monster, "モンスター" %></td>
+                <td><%= f.select :monster, monster_map.map { |k, v| [v, k] }, {}, class: "uk-select uk-form-small" %></td>
+              </tr>
+            </tbody>
+          </table>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+  <%= form.submit "検索", class: "uk-button uk-button-primary uk-button-small" %>
+<% end %>
+<h3>クエスト情報</h3>
+<table class="uk-table uk-table-striped">
+  <thead>
+    <tr>
+      <th>クエスト種別</th>
+      <th>クエストランク</th>
+      <th>クエスト名</th>
+      <th>フィールド名</th>
+      <th>モンスター名</th>
+      <th>モンスター種別</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% if @quest_monsters.present? %>
+      <% quest_id = nil %>
+      <% counter = 0 %>
+      <% @quest_monsters.each do | quest_monster | %>
+        <% if quest_id != quest_monster.quest_id %>
+          <% counter = 1 %>
+        <% end %>
+        <% monster_volume = quest_monster.quest.volume %>
+        <% if counter == 1 %>
+          <tr>
+            <td rowspan="<%= monster_volume %>"><%= quest_monster.quest.quest_type %></td>
+            <td rowspan="<%= monster_volume %>"><%= quest_monster.quest.quest_rank.name %></td>
+            <td rowspan="<%= monster_volume %>"><%= quest_monster.quest.name %></td>
+            <td rowspan="<%= monster_volume %>"><%= quest_monster.quest.field.name %></td>
+            <td><%= quest_monster.monster.name %></td>
+            <td><%= quest_monster.monster.monster_type.type_name %></td>
+          </tr>
+        <% else %>
+          <tr>
+            <td><%= quest_monster.monster.name %></td>
+            <td><%= quest_monster.monster.monster_type.type_name %></td>
+          </tr>
+        <% end %>
+        <% quest_id = quest_monster.quest_id %>
+        <% counter = counter.succ %>
+      <% end %>
+    <% end %>
+  </tbody>
+</table>
