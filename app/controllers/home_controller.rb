@@ -23,7 +23,7 @@ class HomeController < ApplicationController
       end
     end
     @quest_monsters = QuestMonster.where(quest_id: @quest_monsters.pluck(:quest_id)) if @quest_monsters.present?
-    @quest_count = @quest_monsters.select(:quest_id).distinct.length
+    @quest_count = @quest_monsters.select(:quest_id).distinct.length if @quest_monsters.present?
   end
 
   def search(bounty)
