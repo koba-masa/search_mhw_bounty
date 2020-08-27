@@ -1,14 +1,16 @@
 class HomeController < ApplicationController
   # GET /homes
   def index
+    @bounties = {}
+    @quest_count = 0
     @quest_monsters = nil
     if not params.has_key?(:quest)
       return
     end
-    bownties = params[:quest]
-    bownties.each do |key, bownty|
-      next if not bownty.has_key?(:conditions)
-      quests = search(bownty)
+    @bounties = params[:quest]
+    @bounties.each do |key, bounty|
+      next if not bounty.has_key?(:conditions)
+      quests = search(bounty)
       if @quest_monsters.blank?
         @quest_monsters = quests
       else
@@ -21,19 +23,20 @@ class HomeController < ApplicationController
       end
     end
     @quest_monsters = QuestMonster.where(quest_id: @quest_monsters.pluck(:quest_id)) if @quest_monsters.present?
+    @quest_count = @quest_monsters.select(:quest_id).distinct.length
   end
 
-  def search(bownty)
-    condition_key = bownty[:conditions]
+  def search(bounty)
+    condition_key = bounty[:conditions]
     quest = nil
     if condition_key == "quest"
-      quest = search_quest_by_quest(bownty[:rank], bownty[:quest])
+      quest = search_quest_by_quest(bounty[:rank], bounty[:quest])
     elsif condition_key == "field"
-      quest = search_quest_by_field(bownty[:rank], bownty[:field])
+      quest = search_quest_by_field(bounty[:rank], bounty[:field])
     elsif condition_key == "type"
-      quest = search_quest_by_type(bownty[:rank], bownty[:type])
+      quest = search_quest_by_type(bounty[:rank], bounty[:type])
     elsif condition_key == "monster"
-      quest = search_quest_by_monster(bownty[:rank], bownty[:monster])
+      quest = search_quest_by_monster(bounty[:rank], bounty[:monster])
     end
     return quest
   end
@@ -51,7 +54,7 @@ class HomeController < ApplicationController
   end
 
   def search_quest_by_monster(rank, condition)
-    return QuestMonster.joins(:quest, :monster).where(monster_id: condition)
+    return QuestMonster.joins(:quest, :monster).where("quests.quest_rank_id >= ? AND monster_id = ?", rank, condition)
   end
 
 end
