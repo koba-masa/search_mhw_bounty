@@ -6,30 +6,32 @@
   <% field_map = Field.new.field_map %>
   <% type_map = MonsterType.new.type_map %>
   <% monster_map = Monster.new.monster_map %>
-  <div class="uk-flex">
+  <% rank_map = QuestRank.new.three_rank_map %>
+  <div class="uk-grid" uk-grid>
     <% (0..4).each do |n| %>
-      <div>
+      <div class="uk-card uk-card-default" style="border: solid 1px;">
         <%= form.fields_for "#{n}" do |f| %>
-          <table>
+          <% bounty = @bounties["#{n}"] %>
+          <table class="uk-table uk-table-small">
             <tbody>
               <tr>
-                <td><%= n + 1 %></td>
-                <td><%= f.radio_button :conditions, :quest %><%= f.label :conditions_quest, "クエスト" %></td>
-                <td><%= f.select :quest, quest_map.map { |k, v| [v, k] }, {selected: "イベント"}, class: "uk-select" %></td>
+                <th><%= n + 1 %></th>
+                <td><%= f.radio_button :conditions, :quest, checked: checked_condition(bounty, :quest) %><%= f.label :conditions_quest, "クエスト" %></td>
+                <td><%= f.select :quest, quest_map.map { |k, v| [v, k] }, {selected: selected_condition(bounty, :quest, "イベント")}, class: "uk-select uk-form-small" %></td>
                 <td rowspan="4"></td>
               </tr>
               <tr>
-                <td rowspan="3"><%= f.select :rank, QuestRank.new.three_rank_map.map { |k, v| [k, v] }, {selected: 10}, class: "uk-select" %></td>
-                <td><%= f.radio_button :conditions, :field %><%= f.label :conditions_field, "フィールド" %></td>
-                <td><%= f.select :field, field_map.map { |k, v| [v, k] }, {}, class: "uk-select" %></td>
+                <td rowspan="3"><%= f.select :rank, rank_map.map { |k, v| [v, k] }, {selected: selected_rank(rank_map, bounty)}, class: "uk-select" %></td>
+                <td><%= f.radio_button :conditions, :field, checked: checked_condition(bounty, :field) %><%= f.label :conditions_field, "フィールド" %></td>
+                <td><%= f.select :field, field_map.map { |k, v| [v, k] }, {selected: selected_condition(bounty, :field)}, class: "uk-select uk-form-small" %></td>
               </tr>
               <tr>
-                <td><%= f.radio_button :conditions, :type %><%= f.label :conditions_type, "種別" %></td>
-                <td><%= f.select :type, type_map.map { |k, v| [v, k] }, {}, class: "uk-select" %></td>
+                <td><%= f.radio_button :conditions, :type, checked: checked_condition(bounty, :type) %><%= f.label :conditions_type, "種別" %></td>
+                <td><%= f.select :type, type_map.map { |k, v| [v, k] }, {selected: selected_condition(bounty, :type)}, class: "uk-select uk-form-small" %></td>
               </tr>
               <tr>
-                <td><%= f.radio_button :conditions, :monster %><%= f.label :conditions_monster, "モンスター" %></td>
-                <td><%= f.select :monster, monster_map.map { |k, v| [v, k] }, {}, class: "uk-select uk-form-small" %></td>
+                <td><%= f.radio_button :conditions, :monster, checked: checked_condition(bounty, :monster) %><%= f.label :conditions_monster, "モンスター" %></td>
+                <td><%= f.select :monster, monster_map.map { |k, v| [v, k] }, {selected: selected_condition(bounty, :monster)}, class: "uk-select uk-form-small" %></td>
               </tr>
             </tbody>
           </table>
@@ -40,6 +42,7 @@
   <%= form.submit "検索", class: "uk-button uk-button-primary uk-button-small" %>
 <% end %>
 <h3>クエスト情報</h3>
+<div><%= @quest_count %> 件のクエストがヒットしました。</div>
 <table class="uk-table uk-table-striped">
   <thead>
     <tr>
