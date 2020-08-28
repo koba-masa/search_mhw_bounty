@@ -1,21 +1,19 @@
 default: &default
   adapter: postgresql
   encoding: utf8
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  pool: 5
   timeout: 5000
-  host: localhost
-  socket: 5432
-  username: smb
-  password: smb
+  host: <%= ENV['DATABASE_HOST'] %>
+  socket: <%= ENV['DATABASE_PORT'] %>
+  username: <%= ENV['DATABASE_USER'] %>
+  password: <%= ENV['DATABASE_PASS'] %>
+  database: <%= ENV['DATABASE_NAME'] %>
 
 development:
   <<: *default
-  database: search_mhw_bounty_dev
 
 test:
   <<: *default
-  database: search_mhw_bounty_test
 
 production:
   <<: *default
-  database: search_mhw_bounty
